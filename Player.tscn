@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://dodge_assets/art/playerGrey_walk2.png" type="Texture" id=1]
 [ext_resource path="res://dodge_assets/art/playerGrey_walk1.png" type="Texture" id=2]
@@ -21,7 +21,25 @@ animations = [ {
 
 [sub_resource type="CapsuleShape2D" id=2]
 radius = 27.5526
-height = 13.2269
+height = 0.0
+
+[sub_resource type="CurveTexture" id=3]
+
+[sub_resource type="ParticlesMaterial" id=4]
+lifetime_randomness = 0.5
+emission_shape = 1
+emission_sphere_radius = 1.0
+flag_disable_z = true
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 500.0
+orbit_velocity = 1.0
+orbit_velocity_random = 0.0
+orbit_velocity_curve = SubResource( 3 )
+angle_random = 1.0
+scale = 2.0
+scale_random = 1.0
+color = Color( 0.941176, 0.937255, 0.764706, 1 )
 
 [node name="Player" type="Area2D"]
 script = ExtResource( 5 )
@@ -32,5 +50,33 @@ frames = SubResource( 1 )
 animation = "walk"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -7 )
 shape = SubResource( 2 )
+
+[node name="ShieldBot" type="Particles2D" parent="."]
+position = Vector2( -2, 40 )
+emitting = false
+amount = 100
+one_shot = true
+randomness = 1.0
+process_material = SubResource( 4 )
+
+[node name="ShieldTop" type="Particles2D" parent="."]
+position = Vector2( 2, -39 )
+scale = Vector2( -1, -1 )
+emitting = false
+amount = 100
+one_shot = true
+randomness = 1.0
+process_material = SubResource( 4 )
+
+[node name="Shielded" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="ShieldCD" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
 [connection signal="body_entered" from="." to="." method="_on_Player_body_entered"]
+[connection signal="timeout" from="Shielded" to="." method="_shield_expired"]
+[connection signal="timeout" from="ShieldCD" to="." method="_shield_ready"]
